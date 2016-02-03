@@ -27,7 +27,7 @@ public class chatServer {
                 try {
                     while ((message = reader.readLine()) != null) {
                         System.out.println("read" + message);
-                        tellEveryone(message); // вызываем метод, который отправит сообщение клиенту
+                       // tellEveryone(message);  вызываем метод, который отправит сообщение клиенту
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
