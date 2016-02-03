@@ -21,6 +21,8 @@ public class chatClient {
         JButton sendButton = new JButton("Отправить сообщение");
         sendButton.addActionListener(new SendButtonListener());
 
+        setUpNetworking();
+
         incoming = new JTextArea(15, 50);
         incoming.setLineWrap(true);
         incoming.setEditable(false);
@@ -33,37 +35,26 @@ public class chatClient {
         mainPanel.add(sendButton);
         mainPanel.add(qScroller);
 
-        // поток с вложенным классом (реализует Runnable).
-        // работа потока заключается в чтении данных с сервера через сокет,
-        // а также в выводе любых входящих сообщений в прокручиваемую текстовую область
         Thread readerThread = new Thread(new IncomingReader());
         readerThread.start();
 
         frame.getContentPane().add(BorderLayout.CENTER, mainPanel);
         frame.setSize(600, 400);
         frame.setVisible(true);
-
-        setUpNetworking();
     }
 
     private void setUpNetworking() {
-        // исполььзуем сокет для получения входящего и исходящего потоков.
-        //
         try {
             sock = new Socket("127.0.0.1", 5000);
             InputStreamReader streamReader = new InputStreamReader(sock.getInputStream());
-            reader = new BufferedReader(streamReader);        //входящий поток, даёт вохможность обьекту Thread
-                                                              // получать сообщения от сервера
-
-            writer = new PrintWriter(sock.getOutputStream()); //исходящий поток
-
+            reader = new BufferedReader(streamReader);
+            writer = new PrintWriter(sock.getOutputStream());
             System.out.println("Установлено соединение");
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-
     }
-   // обработчик кнопки "Отправить". Содержимое текстового поля отправляется на сервер
+
     public class SendButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent ev) {
             try {
@@ -77,15 +68,13 @@ public class chatClient {
             text.requestFocus();
         }
     }
-            //то, что поток будет выполнять
+
     private class IncomingReader implements Runnable {
         public void run() {
             String message;
-            // поток входит в цикл (пока ответ сервера будет равен null), считывает за раз одну строчку
-            // и добавляет её в прокручиваемую текстовую область (используя перенос строки (/n)
             try {
                 while ((message = reader.readLine()) != null) {
-                    System.out.println("read" + message);
+                    System.out.println("READ" + message);
                     incoming.append(message + "\n");
                 }
             } catch (Exception ex) {
