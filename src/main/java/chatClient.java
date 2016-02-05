@@ -3,14 +3,21 @@ import java.io.*;
 import java.net.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.Iterator;
 
-public class chatClient {
+public class ChatClient {
 
     JTextField text;
     PrintWriter writer;
     Socket sock;
     JTextArea incoming;
     BufferedReader reader;
+
+    public static void main(String[] args) {
+        ChatClient client = new ChatClient();
+        client.go();
+    }
 
     public void go() {
         JFrame frame = new JFrame("Чатик");
@@ -25,8 +32,8 @@ public class chatClient {
         incoming.setLineWrap(true);
         incoming.setEditable(false);
 
-        JScrollPane qScroller = new JScrollPane((incoming));
-        qScroller.setVerticalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        JScrollPane qScroller = new JScrollPane(incoming);
+        qScroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         qScroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         mainPanel.add(text);
@@ -50,7 +57,7 @@ public class chatClient {
         // исполььзуем сокет для получения входящего и исходящего потоков.
         //
         try {
-            sock = new Socket("127.0.0.1", 5000);
+            sock = new Socket("192.168.0.100", 5000);
             InputStreamReader streamReader = new InputStreamReader(sock.getInputStream());
             reader = new BufferedReader(streamReader);        //входящий поток, даёт вохможность обьекту Thread
                                                               // получать сообщения от сервера
@@ -58,7 +65,7 @@ public class chatClient {
             writer = new PrintWriter(sock.getOutputStream()); //исходящий поток
 
             System.out.println("Установлено соединение");
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
 
@@ -85,7 +92,7 @@ public class chatClient {
             // и добавляет её в прокручиваемую текстовую область (используя перенос строки (/n)
             try {
                 while ((message = reader.readLine()) != null) {
-                    System.out.println("read" + message);
+                    System.out.println("Сообщение: " + message);
                     incoming.append(message + "\n");
                 }
             } catch (Exception ex) {
@@ -94,6 +101,7 @@ public class chatClient {
         }
 
         }
+
 
 
 }
